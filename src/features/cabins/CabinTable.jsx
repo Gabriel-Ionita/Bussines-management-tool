@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import styled from "styled-components";
-import { getCabins } from "../../services/apiservicii";
+import { getServicii } from "../../services/apiservicii";
 import Spinner from "../../ui/Spinner";
 import CabinRow from "./CabinRow";
 
@@ -27,17 +27,16 @@ const TableHeader = styled.header`
   color: var(--color-grey-600);
   padding: 1.6rem 2.4rem;
 `;
-function CabinTable() {
-  const {
-    isLoading,
-    data: cabins,
-    error,
-  } = useQuery({
-    queryKey: ["cabins"],
-    queryFn: getCabins,
+function ServiciuTable() {
+  const { data, isLoading } = useQuery({
+    queryKey: ["serviciu"],
+    queryFn: getServicii,
   });
 
+  console.log(data); // Debugging: Log the API response to verify the structure of the data
+
   if (isLoading) return <Spinner />;
+
   return (
     <Table role="table">
       <TableHeader role="row">
@@ -48,10 +47,10 @@ function CabinTable() {
         <div>Reducere</div>
         <div></div>
       </TableHeader>
-      {cabins.map((cabin) => (
-        <CabinRow cabin={cabin} key={cabin.id} />
+      {data.map((serviciu) => (
+        <CabinRow serviciu={serviciu} key={serviciu.id} />
       ))}
     </Table>
   );
 }
-export default CabinTable;
+export default ServiciuTable;

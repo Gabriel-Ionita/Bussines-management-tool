@@ -1,4 +1,6 @@
 import styled from "styled-components";
+import { formatCurrency } from "../../utils/helpers";
+import PropTypes from "prop-types";
 
 const TableRow = styled.div`
   display: grid;
@@ -39,14 +41,38 @@ const Discount = styled.div`
   color: var(--color-green-700);
 `;
 
-function CabinRow(cabin) {
-  const { name, maxCapacity, regularPrice, discount, image } = cabin;
+function ServiciuRow({ serviciu }) {
+  console.log(serviciu); // Debugging: Log the serviciu object to verify its structure
+
+  // Fallback for missing properties
+  const {
+    nume = "N/A",
+    Capacitate = "N/A",
+    pret_deBaza = 0,
+    reducere = "N/A",
+    imagine = "default-image.jpg",
+  } = serviciu || {};
 
   return (
     <TableRow role="row">
-      <Img src={image} />
-      <Cabin>{name}</Cabin>
+      <Img src={imagine} alt={nume} />
+      <Cabin>{nume}</Cabin>
+      <div>Pentru: {Capacitate} persoane</div>
+      <Price>{formatCurrency(pret_deBaza)}</Price>
+      <Discount>{reducere}</Discount>
+      <button>Delete</button>
     </TableRow>
   );
 }
-export default CabinRow;
+
+ServiciuRow.propTypes = {
+  serviciu: PropTypes.shape({
+    nume: PropTypes.string,
+    Capacitate: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    pret_deBaza: PropTypes.number,
+    reducere: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    imagine: PropTypes.string,
+  }).isRequired,
+};
+
+export default ServiciuRow;
