@@ -9,3 +9,12 @@ export async function getServicii() {
 
   return data;
 }
+
+export async function deleteServiciu(id) {
+  const { error } = await supabase.from("serviciu").delete().eq("id", id);
+
+  if (error) {
+    console.error(error);
+    throw new Error("Serviciul nu a putut fi sters");
+  }
+}

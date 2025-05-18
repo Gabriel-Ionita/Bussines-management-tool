@@ -1,6 +1,9 @@
 import styled from "styled-components";
 import { formatCurrency } from "../../utils/helpers";
 import PropTypes from "prop-types";
+import { useMutation } from "@tanstack/react-query";
+import { deleteServiciu } from "../../services/apiservicii";
+import { useQueryClient } from "@tanstack/react-query";
 
 const TableRow = styled.div`
   display: grid;
@@ -46,6 +49,7 @@ function ServiciuRow({ serviciu }) {
 
   // Fallback for missing properties
   const {
+    id: serviciuId = "N/A",
     nume = "N/A",
     Capacitate = "N/A",
     pret_deBaza = 0,
@@ -53,6 +57,17 @@ function ServiciuRow({ serviciu }) {
     imagine = "default-image.jpg",
   } = serviciu || {};
 
+  const queryClient = useQueryClient();
+  const { isLoading: isDeleting, mutate } = useMutation({
+    mutationFn: (id) => deleteServiciu(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["serviciu"]);
+      // Optionally, you can show a success message or perform other actions here
+      console.log("Serviciu deleted successfully");
+
+      // Optionally, you can trigger a refetch or update the state here
+    },
+  });
   return (
     <TableRow role="row">
       <Img src={imagine} alt={nume} />
@@ -60,7 +75,9 @@ function ServiciuRow({ serviciu }) {
       <div>Pentru: {Capacitate} persoane</div>
       <Price>{formatCurrency(pret_deBaza)}</Price>
       <Discount>{reducere}</Discount>
-      <button>Delete</button>
+      <button onClick={() => mutate(serviciuId)} disabled={isDeleting}>
+        Delete
+      </button>
     </TableRow>
   );
 }
