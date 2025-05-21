@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import { useMutation } from "@tanstack/react-query";
 import { deleteServiciu } from "../../services/apiservicii";
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-hot-toast";
 
 const TableRow = styled.div`
   display: grid;
@@ -61,12 +62,13 @@ function ServiciuRow({ serviciu }) {
   const { isLoading: isDeleting, mutate } = useMutation({
     mutationFn: (id) => deleteServiciu(id),
     onSuccess: () => {
-      queryClient.invalidateQueries(["serviciu"]);
-      // Optionally, you can show a success message or perform other actions here
-      console.log("Serviciu deleted successfully");
+      queryClient.invalidateQueries({
+        queryKey: ["serviciu"],
+      });
 
-      // Optionally, you can trigger a refetch or update the state here
+      toast.success("Serviciu sters cu succes");
     },
+    onError: (error) => toast.error(error.message),
   });
   return (
     <TableRow role="row">
