@@ -1,10 +1,9 @@
 import styled from "styled-components";
+import { useState } from "react";
 import { formatCurrency } from "../../utils/helpers";
 import PropTypes from "prop-types";
-import { useMutation } from "@tanstack/react-query";
-import { deleteServiciu } from "../../services/apiservicii";
-import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "react-hot-toast";
+import CreateCabinForm from "./CreateCabinForm";
+import { useDeleteServiciu } from "./useDeleteServiciu";
 
 const TableRow = styled.div`
   display: grid;
@@ -46,7 +45,8 @@ const Discount = styled.div`
 `;
 
 function ServiciuRow({ serviciu }) {
-  console.log(serviciu); // Debugging: Log the serviciu object to verify its structure
+  const [showForm, setShowForm] = useState(false);
+  const { isDeleting, deleteServiciu } = useDeleteServiciu();
 
   // Fallback for missing properties
   const {
@@ -58,29 +58,30 @@ function ServiciuRow({ serviciu }) {
     imagine = "default-image.jpg",
   } = serviciu || {};
 
-  const queryClient = useQueryClient();
-  const { isLoading: isDeleting, mutate } = useMutation({
-    mutationFn: (id) => deleteServiciu(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["serviciu"],
-      });
-
-      toast.success("Serviciu sters cu succes");
-    },
-    onError: (error) => toast.error(error.message),
-  });
   return (
-    <TableRow role="row">
-      <Img src={imagine} alt={nume} />
-      <Cabin>{nume}</Cabin>
-      <div>Pentru: {Capacitate} persoane</div>
-      <Price>{formatCurrency(pret_deBaza)}</Price>
-      <Discount>{reducere}</Discount>
-      <button onClick={() => mutate(serviciuId)} disabled={isDeleting}>
-        Delete
-      </button>
-    </TableRow>
+    <>
+      <TableRow role="row">
+        <Img src={imagine} alt={nume} />
+        <Cabin>{nume}</Cabin>
+        <div>Pentru: {Capacitate} persoane</div>
+        <Price>{formatCurrency(pret_deBaza)}</Price>
+        {reducere ? (
+          <Discount>{formatCurrency(reducere)}</Discount>
+        ) : (
+          <span>N/A</span>
+        )}
+        <div>
+          <button onClick={() => setShowForm((show) => !show)}>Editeaza</button>
+          <button
+            onClick={() => deleteServiciu(serviciuId)}
+            disabled={isDeleting}
+          >
+            Sterge
+          </button>
+        </div>
+      </TableRow>
+      {showForm && <CreateCabinForm serviciuDeEditat={serviciu} />}
+    </>
   );
 }
 

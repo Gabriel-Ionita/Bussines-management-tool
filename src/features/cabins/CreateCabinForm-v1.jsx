@@ -1,53 +1,41 @@
-import { useForm } from "react-hook-form";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-hot-toast";
 import FormRow from "../../ui/FormRow";
 import Input from "../../ui/Input";
 import Form from "../../ui/Form";
 import Button from "../../ui/Button";
 import FileInput from "../../ui/FileInput";
 import Textarea from "../../ui/Textarea";
+import { useForm } from "react-hook-form";
+import { useMutation } from "@tanstack/react-query";
+import { createServiciu } from "../../services/apiservicii";
 
-import { useEditServiciu } from "./useEditServiciu";
-import PropTypes from "prop-types";
-import { useCreateServiciu } from "./useCreateServiciu";
-
-function CreateCabinForm({ serviciuDeEditat = {} }) {
-  const { id: editId, ...editValues } = serviciuDeEditat;
-  const isEditSession = Boolean(editId);
-
-  const { register, handleSubmit, reset, getValues, formState } = useForm({
-    defaultValues: isEditSession ? editValues : {},
-    mode: "onBlur", // Validate on blur
-  });
+function CreateCabinForm() {
+  const { register, handleSubmit, reset, getValues, formState } = useForm();
   const { errors } = formState;
+  // Initialize the query client to manage cache and invalidate queries
+  const queryClient = useQueryClient();
 
-  const { isCreating, createServiciu } = useCreateServiciu();
-  const { isEditing, editServiciu } = useEditServiciu();
+  const { mutate, isLoading, isCreating } = useMutation({
+    mutationFn: createServiciu,
+    onSuccess: () => {
+      toast.success("Serviciu creat cu succes!");
+      queryClient.invalidateQueries({
+        queryKey: ["serviciu"],
+      });
+      reset(); // Reset the form after successful submission
+    },
+    onError: (error) => {
+      toast.error(`Eroare la crearea serviciului: ${error.message}`);
+    },
+  });
 
-  const isWorking = isCreating || isEditing;
-
-  function onSubmit(data) {
-    const image =
-      typeof data.imagine === "string" ? data.imagine : data.imagine[0];
+  const onSubmit = (data) => {
     // console.log("Form data submitted:", data);
-    if (isEditSession)
-      editServiciu(
-        { newServiciuData: { ...data, imagine: image }, id: editId },
-        {
-          onSuccess: () => {
-            reset(); // Reset the form after successful submission
-          },
-        }
-      );
-    else
-      createServiciu(
-        { ...data, imagine: image },
-        {
-          onSuccess: () => {
-            reset(); // Reset the form after successful submission
-          },
-        }
-      ); // Assuming 'imagine' is a file input and you want to send the first file
-  }
+    mutate({ ...data, imagine: data.imagine[0] }); // Assuming 'imagine' is a file input and you want to send the first file
+    // Here would typically send the data to  API
+    // For example: createCabin(data).then(response => { ... });
+  };
 
   function onError(errors) {
     console.error("Form submission errors:", errors);
@@ -121,7 +109,7 @@ function CreateCabinForm({ serviciuDeEditat = {} }) {
           accept="image/*"
           type="file"
           {...register("imagine", {
-            required: isEditSession ? false : "Acest camp este obligatoriu",
+            required: "Acest camp este obligatoriu",
           })}
         />
       </FormRow>
@@ -131,16 +119,10 @@ function CreateCabinForm({ serviciuDeEditat = {} }) {
         <Button variation="secondary" type="reset">
           Anulare
         </Button>
-        <Button disabled={isWorking}>
-          {isEditSession ? "Editeaza Serviciu" : "Creaza serviciu"}
-        </Button>
+        <Button disabled={isCreating}>Adauga</Button>
       </FormRow>
     </Form>
   );
 }
-
-CreateCabinForm.propTypes = {
-  serviciuDeEditat: PropTypes.object,
-};
 
 export default CreateCabinForm;

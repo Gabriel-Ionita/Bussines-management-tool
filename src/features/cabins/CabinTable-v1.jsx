@@ -1,7 +1,8 @@
+import { useQuery } from "@tanstack/react-query";
 import styled from "styled-components";
+import { getServicii } from "../../services/apiservicii";
 import Spinner from "../../ui/Spinner";
 import CabinRow from "./CabinRow";
-import { useServicii } from "./useServicii";
 
 const Table = styled.div`
   border: 1px solid var(--color-grey-200);
@@ -27,7 +28,16 @@ const TableHeader = styled.header`
   padding: 1.6rem 2.4rem;
 `;
 function ServiciuTable() {
-  const { isLoading, serviciu } = useServicii();
+  const {
+    isLoading,
+    data: serviciu,
+    error,
+  } = useQuery({
+    queryKey: ["serviciu"],
+    queryFn: getServicii,
+  });
+
+  // Debugging: Log the API response to verify the structure of the data
 
   if (isLoading) return <Spinner />;
 
