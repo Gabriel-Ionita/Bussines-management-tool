@@ -71,24 +71,43 @@ function Table({ columns, children }) {
   );
 }
 
+Table.propTypes = {
+  columns: PropTypes.arrayOf(PropTypes.object).isRequired,
+  children: PropTypes.node.isRequired
+};
+
 function Header({ children }) {
-  const { colums } = useContext(TableContext);
+  const { columns } = useContext(TableContext);
   return (
-    <StyledHeader role="row" colums={colums}>
+    <StyledHeader role="row" columns={columns} as="header">
       {children}
     </StyledHeader>
   );
 }
+
+Header.propTypes = {
+  children: PropTypes.node.isRequired
+};
 function Row({ children }) {
-  const { colums } = useContext(TableContext);
+Row.propTypes = {
+  children: PropTypes.node.isRequired
+};
+  const { columns } = useContext(TableContext);
   return (
-    <StyledRow role="row" colums={colums}>
+    <StyledRow role="row" columns={columns}>
       {children}
     </StyledRow>
   );
 }
 
-function Body({ children }) {}
+function Body({ data, render }) {
+Body.propTypes = {
+  data: PropTypes.array.isRequired,
+  render: PropTypes.func.isRequired
+};
+  if(!data.length) return <Empty>Nu sunt date</Empty>;
+  return <StyledBody >{data.map(render)}</StyledBody>;
+}
 
 Table.Header = Header;
 Table.Body = Body;

@@ -77,9 +77,7 @@ function ServiciuRow({ serviciu }) {
   }
 
   function handleEdit() {
-  
-
-
+    // Add edit logic here
   }
 
   function handleDelete() {
@@ -101,11 +99,33 @@ function ServiciuRow({ serviciu }) {
       )}
 {/* sectiunea butoane optiuni */}
       <div>
-        {/* <button onClick={handleDuplicate} disabled={isCreating}>
+        <button onClick={handleDuplicate} disabled={isCreating}>
           <FaCopy />
-        </button> */}
+        </button>
 
         <Modal>
+          <Modal.Open opensWindowName="edit">
+            <button>
+              <FaRegEdit />
+            </button>
+          </Modal.Open>
+          <Modal.Window name="edit">
+            <CreateCabinForm serviciuDeEditat={serviciu} />
+          </Modal.Window>
+
+          <Modal.Open opensWindowName="delete">
+            <button>
+              <MdOutlineDeleteForever />
+            </button>
+          </Modal.Open>
+          <Modal.Window name="delete">
+            <ConfirmDelete
+              resourceName="servicii"
+              disabled={isDeleting}
+              onConfirm={() => deleteServiciu(serviciuId)}
+            />
+          </Modal.Window>
+        </Modal>
         <Menus.Menu>
           
           <Menus.Toggle id={serviciuId}/>
@@ -115,51 +135,16 @@ function ServiciuRow({ serviciu }) {
               Duplifica 
             </Menus.Button>
 
-            <Modal.Open opensWindowName="edit">
-          <Menus.Button icon={<FaRegEdit />} onClick={handleEdit}>
+            <Menus.Button icon={<FaRegEdit />} onClick={handleEdit}>
               Editeaza 
             </Menus.Button>
-          </Modal.Open>
-            {/* <Menus.Button icon={<FaRegEdit />} onClick={handleEdit}>
-              Editeaza 
-            </Menus.Button> */}
-
-            {/* <Modal.Open opensWindowName="delete">
-            <button>
-              <MdOutlineDeleteForever />
-            </button>
-          </Modal.Open> */}
           
             <Menus.Button icon={<MdOutlineDeleteForever />} onClick={handleDelete}>
               Sterge 
             </Menus.Button>
           </Menus.List>
-          {/* <Modal.Open opensWindowName="edit">
-          <Menus.Button icon={<FaRegEdit />} onClick={handleEdit}>
-              Editeaza 
-            </Menus.Button>
-          </Modal.Open> */}
-          <Modal.Window name="edit">
-            <CreateCabinForm serviciuDeEditat={serviciu} />
-          </Modal.Window>
-
-          {/* <Modal.Open opensWindowName="delete">
-            <button>
-              <MdOutlineDeleteForever />
-            </button>
-          </Modal.Open> */}
-          <Modal.Window name="delete">
-            <ConfirmDelete
-              resourceName="servicii"
-              disabled={isDeleting}
-              onConfirm={() => deleteServiciu(serviciuId)}
-            />
-          </Modal.Window>
-
-        
 
         </Menus.Menu>
-        </Modal>
       </div>
     </Table.Row>
   );
