@@ -2,7 +2,15 @@ import styled from "styled-components";
 import Spinner from "../../ui/Spinner";
 import CabinRow from "./CabinRow";
 import { useServicii } from "./useServicii";
-import Table from "../../ui/Table";
+
+const Table = styled.div`
+  border: 1px solid var(--color-grey-200);
+
+  font-size: 1.4rem;
+  background-color: var(--color-grey-0);
+  border-radius: 7px;
+  overflow: hidden;
+`;
 
 const TableHeader = styled.header`
   display: grid;
@@ -24,15 +32,15 @@ function ServiciuTable() {
   if (isLoading) return <Spinner />;
 
   return (
-    <Table columns="0.6fr 1.8fr 2.2fr 1fr 1fr 1fr">
-      <Table.Header>
+    <Table role="table">
+      <TableHeader role="row">
         <div>Nr.</div>
         <div>Serviciu</div>
         <div>Capacitate</div>
         <div>Pret</div>
         <div>Reducere</div>
         <div></div>
-      </Table.Header>
+      </TableHeader>
       {serviciu.map((serviciu) => (
         <CabinRow serviciu={serviciu} key={serviciu.id} />
       ))}

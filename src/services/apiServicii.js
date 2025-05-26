@@ -39,6 +39,7 @@ export async function createEditServiciu(serviciuNou, id) {
   }
 
   //Incarcare imagine
+  if (hasImagePath) return data;
 
   const { error: storageError } = await supabase.storage
     .from("imagini-servicii")

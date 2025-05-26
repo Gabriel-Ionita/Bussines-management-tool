@@ -1,21 +1,70 @@
-import Form from '../../ui/Form';
-import FormRow from '../../ui/FormRow';
-import Input from '../../ui/Input';
+import Form from "../../ui/Form";
+import FormRow from "../../ui/FormRow";
+import Input from "../../ui/Input";
+import Spinner from "../../ui/Spinner";
+import { useSettings } from "./useSettings";
+import { useUpdateSetting } from "./useUpdateSetting";
 
 function UpdateSettingsForm() {
+  const {
+    isLoading,
+    setari: {
+      RezervareMinima,
+      RezervareMaxima,
+      MaxNrVizitatori,
+      servireMasa,
+    } = {},
+  } = useSettings();
+
+  const { isUpdating, updateSetting } = useUpdateSetting();
+
+  if (isLoading) {
+    return <Spinner />;
+  }
+  function handleUpdate(e, field) {
+    const { value } = e.target;
+
+    if (!value) return;
+    updateSetting({ [field]: value });
+  }
   return (
     <Form>
-      <FormRow label='Minimum nights/booking'>
-        <Input type='number' id='min-nights' />
+      <FormRow eticheta="Rezervare minima ">
+        <Input
+          type="number"
+          id="min-nights"
+          defaultValue={RezervareMinima}
+          disabled={isUpdating}
+          onBlur={(e) => handleUpdate(e, "RezervareMinima")}
+        />
       </FormRow>
-      <FormRow label='Maximum nights/booking'>
-        <Input type='number' id='max-nights' />
+
+      <FormRow eticheta="Rezervare maxima">
+        <Input
+          type="number"
+          id="max-nights"
+          defaultValue={RezervareMaxima}
+          disabled={isUpdating}
+          onBlur={(e) => handleUpdate(e, "RezervareMaxima")}
+        />
       </FormRow>
-      <FormRow label='Maximum guests/booking'>
-        <Input type='number' id='max-guests' />
+      <FormRow eticheta="Numar maxim de persoane">
+        <Input
+          type="number"
+          id="max-guests"
+          defaultValue={MaxNrVizitatori}
+          disabled={isUpdating}
+          onBlur={(e) => handleUpdate(e, "MaxNrVizitatori")}
+        />
       </FormRow>
-      <FormRow label='Breakfast price'>
-        <Input type='number' id='breakfast-price' />
+      <FormRow eticheta="Costuri suplimentare">
+        <Input
+          type="number"
+          id="breakfast-price"
+          defaultValue={servireMasa}
+          disabled={isUpdating}
+          onBlur={(e) => handleUpdate(e, "servireMasa")}
+        />
       </FormRow>
     </Form>
   );

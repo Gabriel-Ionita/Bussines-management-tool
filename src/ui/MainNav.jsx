@@ -73,13 +73,13 @@ function MainNav() {
         </StyledNavLink>
       </li>
       <li>
-        <StyledNavLink to="/bookings">
+        <StyledNavLink to="/user">
           <MdSelfImprovement />
           <span>Utilizator</span>
         </StyledNavLink>
       </li>
       <li>
-        <StyledNavLink to="/bookings">
+        <StyledNavLink to="/settings">
           <MdOutlineSettings />
           <span>Setari</span>
         </StyledNavLink>

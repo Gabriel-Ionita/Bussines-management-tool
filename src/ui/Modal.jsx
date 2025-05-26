@@ -1,4 +1,10 @@
 import styled from "styled-components";
+import { RiCloseLargeLine } from "react-icons/ri";
+import PropTypes from "prop-types";
+import { createPortal } from "react-dom";
+import { createContext, useContext, cloneElement } from "react";
+import { useState } from "react";
+import { useOutsideClick } from "../hooks/useOutsideClick";
 
 const StyledModal = styled.div`
   position: fixed;
@@ -48,3 +54,65 @@ const Button = styled.button`
     color: var(--color-grey-500);
   }
 `;
+const ModalContext = createContext();
+function Modal({ children }) {
+  const [openName, setOpenName] = useState("");
+
+  const close = () => setOpenName("");
+  const open = setOpenName;
+
+  return (
+    <ModalContext.Provider value={{ openName, close, open }}>
+      {children}
+    </ModalContext.Provider>
+  );
+}
+function Open({ children, opensWindowName }) {
+  const { open } = useContext(ModalContext);
+
+  return cloneElement(children, { onClick: () => open(opensWindowName) });
+}
+
+function Window({ children, name }) {
+  const { openName, close } = useContext(ModalContext);
+  const ref = useOutsideClick(close);
+
+  if (name !== openName) return null;
+
+  return createPortal(
+    <Overlay>
+      <StyledModal ref={ref}>
+        <Button onClick={close}>
+          <RiCloseLargeLine />
+        </Button>
+        <div>
+          {typeof children === "function"
+            ? children({ close })
+            : cloneElement(children, { onCloseModal: close })}
+        </div>
+      </StyledModal>
+    </Overlay>,
+    document.body
+  );
+}
+
+Modal.Open = Open;
+Modal.Window = Window;
+
+Modal.propTypes = {
+  children: PropTypes.node,
+  onClose: PropTypes.func,
+};
+Open.propTypes = {
+  children: PropTypes.node,
+  opensWindowName: PropTypes.string,
+};
+
+Window.propTypes = {
+  children: PropTypes.oneOfType([
+    PropTypes.node,
+    PropTypes.func, // Accept render prop
+  ]).isRequired,
+  name: PropTypes.string,
+};
+export default Modal;

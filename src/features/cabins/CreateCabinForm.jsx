@@ -10,7 +10,7 @@ import { useEditServiciu } from "./useEditServiciu";
 import PropTypes from "prop-types";
 import { useCreateServiciu } from "./useCreateServiciu";
 
-function CreateCabinForm({ serviciuDeEditat = {} }) {
+function CreateCabinForm({ serviciuDeEditat = {}, onCloseModal }) {
   const { id: editId, ...editValues } = serviciuDeEditat;
   const isEditSession = Boolean(editId);
 
@@ -28,13 +28,13 @@ function CreateCabinForm({ serviciuDeEditat = {} }) {
   function onSubmit(data) {
     const image =
       typeof data.imagine === "string" ? data.imagine : data.imagine[0];
-    // console.log("Form data submitted:", data);
     if (isEditSession)
       editServiciu(
         { newServiciuData: { ...data, imagine: image }, id: editId },
         {
           onSuccess: () => {
-            reset(); // Reset the form after successful submission
+            reset();
+            onCloseModal?.(); // Close modal after successful edit
           },
         }
       );
@@ -43,7 +43,8 @@ function CreateCabinForm({ serviciuDeEditat = {} }) {
         { ...data, imagine: image },
         {
           onSuccess: () => {
-            reset(); // Reset the form after successful submission
+            reset();
+            onCloseModal?.(); // Close modal after successful creation
           },
         }
       ); // Assuming 'imagine' is a file input and you want to send the first file
@@ -54,7 +55,10 @@ function CreateCabinForm({ serviciuDeEditat = {} }) {
   }
 
   return (
-    <Form onSubmit={handleSubmit(onSubmit, onError)}>
+    <Form
+      onSubmit={handleSubmit(onSubmit, onError)}
+      type={onCloseModal ? "modal" : "regular"}
+    >
       <FormRow eticheta="Nume Serviciu" error={errors?.nume?.message}>
         <Input
           type="text"
@@ -128,7 +132,11 @@ function CreateCabinForm({ serviciuDeEditat = {} }) {
 
       <FormRow>
         {/* type is an HTML attribute! */}
-        <Button variation="secondary" type="reset">
+        <Button
+          variation="secondary"
+          type="reset"
+          onClick={() => onCloseModal?.()}
+        >
           Anulare
         </Button>
         <Button disabled={isWorking}>
@@ -141,6 +149,7 @@ function CreateCabinForm({ serviciuDeEditat = {} }) {
 
 CreateCabinForm.propTypes = {
   serviciuDeEditat: PropTypes.object,
+  onCloseModal: PropTypes.func,
 };
 
 export default CreateCabinForm;

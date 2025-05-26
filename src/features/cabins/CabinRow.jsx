@@ -1,21 +1,27 @@
 import styled from "styled-components";
-import { useState } from "react";
 import { formatCurrency } from "../../utils/helpers";
 import PropTypes from "prop-types";
 import CreateCabinForm from "./CreateCabinForm";
 import { useDeleteServiciu } from "./useDeleteServiciu";
+import { FaCopy } from "react-icons/fa";
+import { FaRegEdit } from "react-icons/fa";
+import { MdOutlineDeleteForever } from "react-icons/md";
+import { useCreateServiciu } from "./useCreateServiciu";
+import Modal from "../../ui/Modal";
+import ConfirmDelete from "../../ui/ConfirmDelete";
+import Table from "../../ui/Table";
 
-const TableRow = styled.div`
-  display: grid;
-  grid-template-columns: 0.6fr 1.8fr 2.2fr 1fr 1fr 1fr;
-  column-gap: 2.4rem;
-  align-items: center;
-  padding: 1.4rem 2.4rem;
+// const TableRow = styled.div`
+//   display: grid;
+//   grid-template-columns: 0.6fr 1.8fr 2.2fr 1fr 1fr 1fr;
+//   column-gap: 2.4rem;
+//   align-items: center;
+//   padding: 1.4rem 2.4rem;
 
-  &:not(:last-child) {
-    border-bottom: 1px solid var(--color-grey-100);
-  }
-`;
+//   &:not(:last-child) {
+//     border-bottom: 1px solid var(--color-grey-100);
+//   }
+// `;
 
 const Img = styled.img`
   display: block;
@@ -45,43 +51,71 @@ const Discount = styled.div`
 `;
 
 function ServiciuRow({ serviciu }) {
-  const [showForm, setShowForm] = useState(false);
   const { isDeleting, deleteServiciu } = useDeleteServiciu();
+  const { isCreating, createServiciu } = useCreateServiciu();
 
-  // Fallback for missing properties
   const {
-    id: serviciuId = "N/A",
+    id: serviciuId,
     nume = "N/A",
     Capacitate = "N/A",
     pret_deBaza = 0,
     reducere = "N/A",
     imagine = "default-image.jpg",
+    descriere = "N/A",
   } = serviciu || {};
 
+  function handleDuplicate() {
+    createServiciu({
+      nume: `Copie de la ${nume}`,
+      Capacitate,
+      pret_deBaza,
+      reducere,
+      imagine,
+      descriere,
+    });
+  }
+
   return (
-    <>
-      <TableRow role="row">
-        <Img src={imagine} alt={nume} />
-        <Cabin>{nume}</Cabin>
-        <div>Pentru: {Capacitate} persoane</div>
-        <Price>{formatCurrency(pret_deBaza)}</Price>
-        {reducere ? (
-          <Discount>{formatCurrency(reducere)}</Discount>
-        ) : (
-          <span>N/A</span>
-        )}
-        <div>
-          <button onClick={() => setShowForm((show) => !show)}>Editeaza</button>
-          <button
-            onClick={() => deleteServiciu(serviciuId)}
-            disabled={isDeleting}
-          >
-            Sterge
-          </button>
-        </div>
-      </TableRow>
-      {showForm && <CreateCabinForm serviciuDeEditat={serviciu} />}
-    </>
+    <Table.Row>
+      <Img src={imagine} alt={nume} />
+      <Cabin>{nume}</Cabin>
+      <div>Pentru: {Capacitate} persoane</div>
+      <Price>{formatCurrency(pret_deBaza)}</Price>
+      {reducere ? (
+        <Discount>{formatCurrency(reducere)}</Discount>
+      ) : (
+        <span>N/A</span>
+      )}
+      <div>
+        <button onClick={handleDuplicate} disabled={isCreating}>
+          <FaCopy />
+        </button>
+
+        <Modal>
+          <Modal.Open opensWindowName="edit">
+            <button>
+              <FaRegEdit />
+            </button>
+          </Modal.Open>
+          <Modal.Window name="edit">
+            <CreateCabinForm serviciuDeEditat={serviciu} />
+          </Modal.Window>
+
+          <Modal.Open>
+            <button>
+              <MdOutlineDeleteForever />
+            </button>
+          </Modal.Open>
+          <Modal.Window>
+            <ConfirmDelete
+              resourceName="servicii"
+              disabled={isDeleting}
+              onConfirm={() => deleteServiciu(serviciuId)}
+            />
+          </Modal.Window>
+        </Modal>
+      </div>
+    </Table.Row>
   );
 }
 
