@@ -26,7 +26,7 @@ async function deleteCabins() {
 }
 
 async function deleteBookings() {
-  const { error } = await supabase.from("bookings").delete().gt("id", 0);
+  const { error } = await supabase.from("Rezervari").delete().gt("id", 0);
   if (error) console.log(error.message);
 }
 
@@ -96,7 +96,7 @@ async function createBookings() {
 
   console.log(finalBookings);
 
-  const { error } = await supabase.from("bookings").insert(finalBookings);
+  const { error } = await supabase.from("Rezervari").insert(finalBookings);
   if (error) console.log(error.message);
 }
 

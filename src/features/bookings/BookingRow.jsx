@@ -6,6 +6,7 @@ import Table from "../../ui/Table";
 
 import { formatCurrency } from "../../utils/helpers";
 import { formatDistanceFromNow } from "../../utils/helpers";
+import PropTypes from 'prop-types';
 
 const Cabin = styled.div`
   font-size: 1.6rem;
@@ -36,16 +37,16 @@ const Amount = styled.div`
 
 function BookingRow({
   booking: {
-    id: bookingId,
-    created_at,
-    startDate,
-    endDate,
-    numNights,
-    numGuests,
-    totalPrice,
+    // id,
+    // created_at,
+    DataSosire,
+    DataPlecare,
+    NumNopti,
+    // numVizitatori,
     status,
-    guests: { fullName: guestName, email },
-    cabins: { name: cabinName },
+    PretTotal,
+    Vizitatori: { numePrenume, email },
+    serviciu: { nume },
   },
 }) {
   const statusToTagName = {
@@ -56,31 +57,51 @@ function BookingRow({
 
   return (
     <Table.Row>
-      <Cabin>{cabinName}</Cabin>
+      <Cabin>{nume}</Cabin>
 
       <Stacked>
-        <span>{guestName}</span>
+        <span>{numePrenume}</span>
         <span>{email}</span>
       </Stacked>
 
       <Stacked>
         <span>
-          {isToday(new Date(startDate))
+          {isToday(new Date(DataSosire))
             ? "Today"
-            : formatDistanceFromNow(startDate)}{" "}
-          &rarr; {numNights} night stay
+            : formatDistanceFromNow(DataSosire)}{" "}
+          &rarr; {NumNopti} night stay
         </span>
         <span>
-          {format(new Date(startDate), "MMM dd yyyy")} &mdash;{" "}
-          {format(new Date(endDate), "MMM dd yyyy")}
+          {format(new Date(DataSosire), "MMM dd yyyy")} &mdash;{" "}
+          {format(new Date(DataPlecare), "MMM dd yyyy")}
         </span>
       </Stacked>
 
       <Tag type={statusToTagName[status]}>{status.replace("-", " ")}</Tag>
 
-      <Amount>{formatCurrency(totalPrice)}</Amount>
+      <Amount>{formatCurrency(PretTotal)}</Amount>
     </Table.Row>
   );
 }
+
+BookingRow.propTypes = {
+  booking: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    created_at: PropTypes.string,
+    DataSosire: PropTypes.string.isRequired,
+    DataPlecare: PropTypes.string.isRequired,
+    NumNopti: PropTypes.number.isRequired,
+    numVizitatori: PropTypes.number,
+    PretTotal: PropTypes.number.isRequired,
+    status: PropTypes.string.isRequired,
+    Vizitatori: PropTypes.shape({
+      numePrenume: PropTypes.string.isRequired,
+      email: PropTypes.string.isRequired,
+    }).isRequired,
+    serviciu: PropTypes.shape({
+      nume: PropTypes.string.isRequired,
+    }).isRequired,
+  }).isRequired,
+};
 
 export default BookingRow;

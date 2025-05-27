@@ -102,10 +102,10 @@ Row.propTypes = {
 
 function Body({ data, render }) {
 Body.propTypes = {
-  data: PropTypes.array.isRequired,
+  data: PropTypes.array,
   render: PropTypes.func.isRequired
 };
-  if(!data.length) return <Empty>Nu sunt date</Empty>;
+  if(!data || !data.length) return <Empty>Nu sunt date</Empty>;
   return <StyledBody >{data.map(render)}</StyledBody>;
 }
 
