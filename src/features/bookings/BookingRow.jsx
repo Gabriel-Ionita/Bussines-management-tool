@@ -69,7 +69,7 @@ function BookingRow({
           {isToday(new Date(DataSosire))
             ? "Today"
             : formatDistanceFromNow(DataSosire)}{" "}
-          &rarr; {NumNopti} night stay
+          &rarr; {NumNopti || 0} night stay
         </span>
         <span>
           {format(new Date(DataSosire), "MMM dd yyyy")} &mdash;{" "}
@@ -77,9 +77,9 @@ function BookingRow({
         </span>
       </Stacked>
 
-      <Tag type={statusToTagName[status]}>{status.replace("-", " ")}</Tag>
+      <Tag type={statusToTagName[status] || "blue"}>{(status || "").replace("-", " ")}</Tag>
 
-      <Amount>{formatCurrency(PretTotal)}</Amount>
+      <Amount>{formatCurrency(PretTotal || 0)}</Amount>
     </Table.Row>
   );
 }
